@@ -5,6 +5,75 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Noosphere — Semantic-Native Browser for Agents</title>
   <meta name="description" content="Transform the web from visual pages into a knowledge graph. Built for Raspberry Pi.">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="Noosphere Project">
+  <meta name="generator" content="Noosphere">
+  
+  <!-- OpenGraph for social -->
+  <meta property="og:title" content="Noosphere — Semantic-Native Browser">
+  <meta property="og:description" content="Transform web pages into knowledge graphs. For agents and AI.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://noosphere-landing.vercel.app">
+  <meta property="og:image" content="https://noosphere-landing.vercel.app/og-image.png">
+  
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Noosphere Browser">
+  <meta name="twitter:description" content="Semantic-native browser for agents. Built for Raspberry Pi.">
+  
+  <!-- AI Agent Structured Data (JSON-LD) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Noosphere Browser",
+    "alternateName": ["noosphere", "noosphere-browser"],
+    "description": "Semantic-native browser that transforms web pages into knowledge graphs. Extracts entities, relations, and clean Markdown from any URL.",
+    "url": "https://github.com/developerfred/noosphere-browser-v1",
+    "applicationCategory": "WebBrowser",
+    "operatingSystem": ["Linux", "macOS", "Windows", "Raspberry Pi"],
+    "programmingLanguage": "Zig",
+    "license": "https://www.apache.org/licenses/LICENSE-2.0",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "downloadUrl": "https://github.com/developerfred/noosphere-browser-v1/releases",
+    "installationInfo": {
+      "@type": "SoftwareApplication",
+      "name": "install.sh",
+      "url": "https://raw.githubusercontent.com/developerfred/noosphere-browser-v1/master/install.sh",
+      "command": "curl -fsSL https://git.io/noosphere-install | bash"
+    },
+    "features": [
+      "Semantic entity extraction (persons, organizations, locations, URLs, dates)",
+      "Relation extraction (subject-predicate-object triples)",
+      "HTML to Markdown conversion",
+      "Knowledge graph storage (SQLite/JSON)",
+      "Multi-platform support (Linux, macOS, Windows, ARM)",
+      "Low resource usage (<512MB RAM, <5MB binary)",
+      "P2P network ready for distributed knowledge"
+    ],
+    "codeRepository": "https://github.com/developerfred/noosphere-browser-v1",
+    "issueTracker": "https://github.com/developerfred/noosphere-browser-v1/issues",
+    "readme": "https://github.com/developerfred/noosphere-browser-v1/blob/master/README.md",
+    "agentsDocumentation": "https://github.com/developerfred/noosphere-browser-v1/blob/master/AGENTS.md"
+  }
+  </script>
+  
+  <!-- Agent-accessible meta tags -->
+  <meta name="agent:compatible" content="yes">
+  <meta name="agent:install:method" content="curl -fsSL https://git.io/noosphere-install | bash">
+  <meta name="agent:download:github" content="https://github.com/developerfred/noosphere-browser-v1/releases/latest">
+  <meta name="agent:build:from_source" content="git clone https://github.com/developerfred/noosphere-browser-v1 && cd noosphere-browser-v1 && make build">
+  <meta name="agent:usage:fetch" content="noosphere --fetch <url>">
+  <meta name="agent:usage:query" content="noosphere --query <search-term>">
+  <meta name="agent:usage:graph" content="noosphere --graph">
+  <meta name="agent:output:format" content="JSON (entities, relations, markdown)">
+  <meta name="agent:platforms" content="linux-x86_64, linux-arm64, linux-armv7, macos-intel, macos-apple-silicon, windows">
+  <meta name="agent:language" content="Zig">
+  <meta name="agent:license" content="Apache-2.0">
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
