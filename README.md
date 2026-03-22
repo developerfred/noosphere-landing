@@ -4,6 +4,7 @@ The official landing page for Noosphere — Semantic-native browser for the know
 
 ## 🌐 Live
 
+**https://noosphere-landing.vercel.app** (Vercel)
 **https://noosphere.dev** (coming soon)
 
 ## 📦 Quick Preview
