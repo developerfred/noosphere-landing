@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Noosphere — Semantic-Native Browser for Agents</title>
+  <meta name="description" content="Transform the web from visual pages into a knowledge graph. Built for Raspberry Pi.">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-dark: #0a0a0f;
+      --bg-card: #12121a;
+      --bg-card-hover: #1a1a24;
+      --accent: #667eea;
+      --accent-alt: #764ba2;
+      --accent-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --text: #e0e0e0;
+      --text-muted: #888;
+      --border: #2a2a3a;
+      --success: #4ade80;
+      --warning: #facc15;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-dark);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Background effects */
+    .bg-gradient {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(102, 126, 234, 0.15), transparent),
+        radial-gradient(ellipse 60% 40% at 80% 60%, rgba(118, 75, 162, 0.1), transparent);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .grid-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(102, 126, 234, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(102, 126, 234, 0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Navigation */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 16px 0;
+      background: rgba(10, 10, 15, 0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    nav .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 24px;
+      font-weight: 700;
+      color: white;
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--accent-gradient);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: white;
+    }
+
+    .nav-cta {
+      background: var(--accent-gradient);
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      color: white !important;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .nav-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
+    }
+
+    /* Hero */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 120px 0 80px;
+    }
+
+    .hero-content {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(102, 126, 234, 0.1);
+      border: 1px solid rgba(102, 126, 234, 0.3);
+      padding: 8px 16px;
+      border-radius: 100px;
+      font-size: 14px;
+      color: var(--accent);
+      margin-bottom: 24px;
+    }
+
+    .hero-badge::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: var(--success);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    h1 {
+      font-size: clamp(48px, 8vw, 80px);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 24px;
+      background: linear-gradient(180deg, white 0%, rgba(255,255,255,0.6) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(18px, 3vw, 24px);
+      color: var(--text-muted);
+      margin-bottom: 40px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 16px 32px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 16px;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--accent-gradient);
+      color: white;
+      box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 40px rgba(102, 126, 234, 0.5);
+    }
+
+    .btn-secondary {
+      background: var(--bg-card);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent);
+    }
+
+    /* Visual demo */
+    .hero-visual {
+      margin-top: 80px;
+      position: relative;
+    }
+
+    .browser-mockup {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 
+        0 0 0 1px rgba(255,255,255,0.05),
+        0 20px 60px rgba(0,0,0,0.5),
+        0 0 100px rgba(102, 126, 234, 0.1);
+    }
+
+    .browser-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      background: rgba(0,0,0,0.3);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .browser-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .browser-dot.red { background: #ff5f56; }
+    .browser-dot.yellow { background: #ffbd2e; }
+    .browser-dot.green { background: #27c93f; }
+
+    .browser-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 300px;
+    }
+
+    .browser-original {
+      padding: 24px;
+      border-right: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .browser-magic {
+      padding: 24px;
+      background: rgba(102, 126, 234, 0.05);
+    }
+
+    .browser-original h4,
+    .browser-magic h4 {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .browser-magic .triple {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: var(--bg-dark);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      font-size: 13px;
+      border: 1px solid var(--border);
+    }
+
+    .triple-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--accent-gradient);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .triple-content {
+      flex: 1;
+    }
+
+    .triple-content strong {
+      display: block;
+      color: white;
+      margin-bottom: 2px;
+    }
+
+    .triple-content span {
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+
+    /* Features */
+    .features {
+      padding: 120px 0;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 80px;
+    }
+
+    .section-label {
+      display: inline-block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: clamp(36px, 5vw, 48px);
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .section-subtitle {
+      font-size: 18px;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 24px;
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      transition: all 0.3s;
+    }
+
+    .feature-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+
+    .feature-icon {
+      width: 56px;
+      height: 56px;
+      background: var(--accent-gradient);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+
+    .feature-card h3 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .feature-card p {
+      color: var(--text-muted);
+      font-size: 15px;
+    }
+
+    /* Architecture */
+    .architecture {
+      padding: 120px 0;
+      background: var(--bg-card);
+    }
+
+    .arch-diagram {
+      margin-top: 60px;
+      padding: 40px;
+      background: var(--bg-dark);
+      border-radius: 24px;
+      border: 1px solid var(--border);
+    }
+
+    .arch-layers {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .arch-layer {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .arch-label {
+      width: 140px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent);
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .arch-boxes {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .arch-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .arch-connector {
+      width: 2px;
+      height: 40px;
+      background: linear-gradient(to bottom, var(--accent), transparent);
+      margin-left: 70px;
+    }
+
+    /* Stats */
+    .stats {
+      padding: 80px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 40px;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 48px;
+      font-weight: 800;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .stat-label {
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    /* CTA */
+    .cta {
+      padding: 120px 0;
+      text-align: center;
+    }
+
+    .cta-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 80px 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    }
+
+    .cta h2 {
+      font-size: clamp(32px, 5vw, 48px);
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .cta p {
+      color: var(--text-muted);
+      font-size: 18px;
+      margin-bottom: 40px;
+    }
+
+    /* Footer */
+    footer {
+      padding: 60px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+
+    .footer-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: white;
+    }
+
+    .footer-copy {
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+
+      .browser-content {
+        grid-template-columns: 1fr;
+      }
+
+      .browser-original {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .arch-layer {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .arch-label {
+        text-align: left;
+      }
+
+      .footer-content {
+        flex-direction: column;
+        gap: 24px;
+        text-align: center;
+      }
+    }
+
+    /* Animations */
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .hero-visual {
+      animation: float 6s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-gradient"></div>
+  <div class="grid-bg"></div>
+
+  <nav>
+    <div class="container">
+      <a href="#" class="logo">
+        <div class="logo-icon">🔮</div>
+        <span>Noosphere</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#architecture">Architecture</a></li>
+        <li><a href="#install">Install</a></li>
+        <li><a href="https://github.com/developerfred/noosphere-browser-v1" class="nav-cta">GitHub</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span>Now in Alpha</span>
+        </div>
+        <h1>The Web is Knowledge.<br>Let's Treat It That Way.</h1>
+        <p class="hero-subtitle">
+          Noosphere transforms the web from visual pages into a queryable knowledge graph. 
+          Built for Raspberry Pi. Made for agents.
+        </p>
+        <div class="hero-actions">
+          <a href="#install" class="btn btn-primary">
+            🚀 Install Now
+          </a>
+          <a href="https://github.com/developerfred/noosphere-browser-v1" class="btn btn-secondary">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+            View on GitHub
+          </a>
+        </div>
+
+        <div class="hero-visual">
+          <div class="browser-mockup">
+            <div class="browser-header">
+              <div class="browser-dot red"></div>
+              <div class="browser-dot yellow"></div>
+              <div class="browser-dot green"></div>
+            </div>
+            <div class="browser-content">
+              <div class="browser-original">
+                <h4>📄 Original Page</h4>
+                <p>Visual HTML designed for humans. Ads, navigation, noise...</p>
+                <p style="margin-top: 16px; font-size: 12px;">
+                  "Albert Einstein was a theoretical physicist who developed the theory of relativity, one of the two pillars of modern physics. He was born in Ulm in 1879..."
+                </p>
+              </div>
+              <div class="browser-magic">
+                <h4>🧠 Knowledge Graph</h4>
+                <div class="triple">
+                  <div class="triple-icon">👤</div>
+                  <div class="triple-content">
+                    <strong>Albert Einstein</strong>
+                    <span>type: PERSON</span>
+                  </div>
+                </div>
+                <div class="triple">
+                  <div class="triple-icon">📍</div>
+                  <div class="triple-content">
+                    <strong>born_in → Ulm</strong>
+                    <span>confidence: 95%</span>
+                  </div>
+                </div>
+                <div class="triple">
+                  <div class="triple-icon">💼</div>
+                  <div class="triple-content">
+                    <strong>occupation → physicist</strong>
+                    <span>confidence: 98%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features" id="features">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label">Features</span>
+        <h2 class="section-title">Built Different</h2>
+        <p class="section-subtitle">
+          Not just another browser. A complete paradigm shift for how agents interact with the web.
+        </p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🔗</div>
+          <h3>Semantic Snapshots</h3>
+          <p>Every page becomes structured triples: subjects, predicates, objects. The web as a graph, not a tree.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h3>Knowledge Extraction</h3>
+          <p>Automatically extract entities, relations, and facts. People, places, organizations, citations.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🔍</div>
+          <h3>Semantic Search</h3>
+          <p>Search by meaning, not keywords. "Papers about transformers" finds NLP transformer papers.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🌐</div>
+          <h3>P2P Network</h3>
+          <p>Share knowledge with other Noosphere nodes. Collaborative learning across devices.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h3>Edge Ready</h3>
+          <p>Runs on $35 Raspberry Pi. 512MB RAM. 3-8W power. Full knowledge graph, anywhere.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🔒</div>
+          <h3>Offline Mode</h3>
+          <p>Your knowledge graph works offline. Sync when connected. Privacy by default.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="architecture" id="architecture">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label">Architecture</span>
+        <h2 class="section-title">Built for Speed</h2>
+        <p class="section-subtitle">
+          Minimal dependencies. Maximum performance. Runs on embedded hardware.
+        </p>
+      </div>
+
+      <div class="arch-diagram">
+        <div class="arch-layers">
+          <div class="arch-layer">
+            <div class="arch-label">Application</div>
+            <div class="arch-boxes">
+              <div class="arch-box">CLI</div>
+              <div class="arch-box">HTTP Server</div>
+              <div class="arch-box">Extension</div>
+            </div>
+          </div>
+          
+          <div class="arch-connector"></div>
+          
+          <div class="arch-layer">
+            <div class="arch-label">Logic</div>
+            <div class="arch-boxes">
+              <div class="arch-box">Parser</div>
+              <div class="arch-box">Extractor</div>
+              <div class="arch-box">Querier</div>
+            </div>
+          </div>
+          
+          <div class="arch-connector"></div>
+          
+          <div class="arch-layer">
+            <div class="arch-label">Storage</div>
+            <div class="arch-boxes">
+              <div class="arch-box">SQLite (WAL)</div>
+              <div class="arch-box">Vector Index</div>
+              <div class="arch-box">JSON Cache</div>
+            </div>
+          </div>
+          
+          <div class="arch-connector"></div>
+          
+          <div class="arch-layer">
+            <div class="arch-label">Network</div>
+            <div class="arch-boxes">
+              <div class="arch-box">Nanomsg</div>
+              <div class="arch-box">gRPC</div>
+              <div class="arch-box">WebSocket</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="container">
+          <div class="stats-grid">
+            <div class="stat">
+              <div class="stat-value">&lt;5MB</div>
+              <div class="stat-label">Binary Size</div>
+            </div>
+            <div class="stat">
+              <div class="stat-value">&lt;512MB</div>
+              <div class="stat-label">RAM Usage</div>
+            </div>
+            <div class="stat">
+              <div class="stat-value">&lt;100ms</div>
+              <div class="stat-label">Parse Time</div>
+            </div>
+            <div class="stat">
+              <div class="stat-value">3-8W</div>
+              <div class="stat-label">Power Draw</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta" id="install">
+    <div class="container">
+      <div class="cta-box">
+        <h2>Ready to Join the Knowledge Graph?</h2>
+        <p>Install Noosphere on your Raspberry Pi or start contributing.</p>
+        <div class="hero-actions">
+          <a href="https://github.com/developerfred/noosphere-browser-v1#installation" class="btn btn-primary">
+            📦 Install for Raspberry Pi
+          </a>
+          <a href="https://github.com/developerfred/noosphere-extension-v1" class="btn btn-secondary">
+            🔮 Try Chrome Extension
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="logo">
+          <div class="logo-icon">🔮</div>
+          <span>Noosphere</span>
+        </div>
+        <ul class="footer-links">
+          <li><a href="https://github.com/developerfred/noosphere-browser-v1">Browser</a></li>
+          <li><a href="https://github.com/developerfred/noosphere-extension-v1">Extension</a></li>
+          <li><a href="https://codeberg.org/codingsh/noosphere-browser">Codeberg</a></li>
+          <li><a href="#">Documentation</a></li>
+        </ul>
+        <div class="footer-copy">
+          Apache 2.0 — Built with 🔮 by agents
+        </div>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
